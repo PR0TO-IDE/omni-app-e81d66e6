@@ -1,0 +1,472 @@
+"use client"
+
+import React, { useEffect, useMemo, useState } from "react"
+import { v4 as uuid } from "uuid"
+
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { cn } from "@/lib/utils"
+import { api } from "@/lib/api"
+
+import { RideCard, type Ride } from "./components/RideCard"
+import { CreateRideForm, type NewRideInput } from "./components/CreateRideForm"
+import { ProfileCard, type Profile } from "./components/ProfileCard"
+import { BottomNav, type TabId } from "./components/BottomNav"
+
+const RIDES_KEY = "rc_rides"
+const PROFILE_KEY = "rc_profile"
+const BOOKMARKS_KEY = "rc_bookmarks"
+const JOINED_KEY = "rc_joined"
+
+const defaultProfile: Profile = {
+  name: "",
+  city: "",
+  pace: "",
+  typicalDistance: "",
+  rideTypes: "",
+  bio: "",
+}
+
+const seedRides = (): Ride[] => {
+  const now = new Date()
+  const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: "short", day: "numeric" })
+
+  const d1 = new Date(now)
+  d1.setDate(now.getDate() + 1)
+  const d2 = new Date(now)
+  d2.setDate(now.getDate() + 3)
+  const d3 = new Date(now)
+  d3.setDate(now.getDate() + 5)
+
+  return [
+    {
+      id: uuid(),
+      title: "Sunrise Riverfront Tempo",
+      date: fmt(d1),
+      time: "06:10",
+      startLocation: "Riverfront Park – East Gate",
+      distanceKm: 42,
+      pace: "27-30 km/h",
+      level: "Intermediate",
+      notes: "Steady paceline, no drops. Quick espresso stop after.",
+      createdByMe: false,
+    },
+    {
+      id: uuid(),
+      title: "City Lights Social Loop",
+      date: fmt(d2),
+      time: "19:00",
+      startLocation: "Central Plaza Fountain",
+      distanceKm: 28,
+      pace: "20-24 km/h",
+      level: "All Levels",
+      notes: "No-drop, chatty, lights required. Perfect for new riders.",
+      createdByMe: false,
+    },
+    {
+      id: uuid(),
+      title: "Gravel Ridge Sunrise Climb",
+      date: fmt(d3),
+      time: "07:00",
+      startLocation: "Oakridge Trailhead Lot",
+      distanceKm: 55,
+      pace: "25-28 km/h",
+      level: "Advanced",
+      notes: "Mixed surface, long climbs, bring 32c+ tires and snacks.",
+      createdByMe: false,
+    },
+  ]
+}
+
+const HeaderBar: React.FC = () => {
+  return (
+    <header className="fixed inset-x-0 top-0 z-40 mx-auto flex h-14 max-w-md items-center justify-between px-4 backdrop-blur-xl">
+      <div className="flex flex-col leading-tight">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
+          RideConnect
+        </span>
+        <h1 className="text-[19px] font-semibold tracking-tight text-slate-50">
+          Find your next crew
+        </h1>
+      </div>
+      <Button
+        type="button"
+        size="icon"
+        className="h-9 w-9 rounded-2xl bg-slate-900/90 text-[15px] text-slate-300 hover:bg-slate-800"
+        aria-label="Open quick actions"
+      >
+        ☰
+      </Button>
+    </header>
+  )
+}
+
+interface FilterTabsProps {
+  activeTab: TabId
+  onChange: (tab: TabId) => void
+}
+
+const FilterTabs: React.FC<FilterTabsProps> = ({ activeTab, onChange }) => {
+  const items: { id: TabId; label: string }[] = [
+    { id: "discover", label: "Discover" },
+    { id: "my-rides", label: "My rides" },
+    { id: "profile", label: "Profile" },
+  ]
+
+  return (
+    <div className="mt-16 px-4">
+      <div className="flex rounded-full bg-slate-900/80 p-1.5 shadow-[0_16px_45px_rgba(15,23,42,1)] ring-1 ring-slate-800/80">
+        {items.map(item => {
+          const isActive = item.id === activeTab
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onChange(item.id)}
+              className={cn(
+                "flex-1 rounded-full px-2.5 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.16em] transition-all",
+                "h-10 min-h-[40px]",
+                isActive
+                  ? "bg-emerald-500 text-black shadow-[0_10px_30px_rgba(16,185,129,0.35)]"
+                  : "text-slate-500 hover:text-slate-100"
+              )}
+            >
+              {item.label}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+interface DiscoverRidesSectionProps {
+  rides: Ride[]
+  bookmarkedRideIds: string[]
+  joinedRideIds: string[]
+  onJoinRide: (id: string) => void
+  onBookmarkRide: (id: string) => void
+}
+
+const DiscoverRidesSection: React.FC<DiscoverRidesSectionProps> = ({
+  rides,
+  bookmarkedRideIds,
+  joinedRideIds,
+  onJoinRide,
+  onBookmarkRide,
+}) => {
+  return (
+    <section className="mt-3 px-4 pb-28">
+      <div className="mb-2 flex items-baseline justify-between">
+        <h2 className="text-[13px] font-semibold tracking-[0.12em] text-slate-400">
+          Nearby meetups
+        </h2>
+        <span className="text-[10px] text-slate-500">
+          {rides.length} curated rides
+        </span>
+      </div>
+      <div>
+        {rides.map(ride => (
+          <RideCard
+            key={ride.id}
+            ride={ride}
+            variant="discover"
+            isBookmarked={bookmarkedRideIds.includes(ride.id)}
+            isJoined={joinedRideIds.includes(ride.id)}
+            onJoin={onJoinRide}
+            onBookmark={onBookmarkRide}
+          />
+        ))}
+        {rides.length === 0 && (
+          <Card className="mt-2 rounded-2xl border-none bg-slate-950/95 px-4 py-4 text-[11px] text-slate-400 shadow-[0_16px_40px_rgba(15,23,42,0.9)]">
+            No rides yet. Tap "Create" below to host the first crew in your area.
+          </Card>
+        )}
+      </div>
+    </section>
+  )
+}
+
+interface MyRidesSectionProps {
+  createdRides: Ride[]
+  joinedRides: Ride[]
+  onLeaveRide: (id: string) => void
+}
+
+const MyRidesSection: React.FC<MyRidesSectionProps> = ({
+  createdRides,
+  joinedRides,
+  onLeaveRide,
+}) => {
+  return (
+    <section className="mt-3 px-4 pb-28 flex flex-col gap-3">
+      <div>
+        <h2 className="mb-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+          Created by you
+        </h2>
+        {createdRides.length > 0 ? (
+          createdRides.map(ride => (
+            <RideCard
+              key={ride.id}
+              ride={ride}
+              variant="my-created"
+            />
+          ))
+        ) : (
+          <p className="rounded-2xl bg-slate-950/95 px-3 py-3 text-[10px] text-slate-500">
+            You haven&apos;t hosted a ride yet. Use the create button below to design a route
+            that matches your style.
+          </p>
+        )}
+      </div>
+
+      <div>
+        <h2 className="mb-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+          You&apos;re joining
+        </h2>
+        {joinedRides.length > 0 ? (
+          joinedRides.map(ride => (
+            <RideCard
+              key={ride.id}
+              ride={ride}
+              variant="my-joined"
+              isJoined
+              onLeave={onLeaveRide}
+            />
+          ))
+        ) : (
+          <p className="rounded-2xl bg-slate-950/95 px-3 py-3 text-[10px] text-slate-500">
+            Join a ride from Discover and it will appear here with a quick way to
+            leave if plans change.
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+interface ProfileSectionProps {
+  profile: Profile
+  onProfileChange: (profile: Profile) => void
+}
+
+const ProfileSection: React.FC<ProfileSectionProps> = ({
+  profile,
+  onProfileChange,
+}) => {
+  return (
+    <section className="mt-3 px-4 pb-28">
+      <ProfileCard profile={profile} onChange={onProfileChange} />
+    </section>
+  )
+}
+
+interface CreateRideSheetProps {
+  open: boolean
+  onClose: () => void
+  onCreateRide: (ride: NewRideInput) => void
+}
+
+const CreateRideSheet: React.FC<CreateRideSheetProps> = ({
+  open,
+  onClose,
+  onCreateRide,
+}) => {
+  if (!open) return null
+
+  const handleSubmit = (ride: NewRideInput) => {
+    onCreateRide(ride)
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-t-3xl bg-slate-950/98 px-4 pb-4 pt-3 shadow-[0_-18px_55px_rgba(15,23,42,1)] ring-1 ring-slate-800/90">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex flex-col leading-tight">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-emerald-400">
+              Host a meetup
+            </span>
+            <span className="text-[15px] font-semibold text-slate-50">
+              Design a ride that fits your crew
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900/90 text-[14px] text-slate-400 hover:bg-slate-800"
+            aria-label="Close create ride"
+          >
+            ✕
+          </button>
+        </div>
+        <CreateRideForm onSubmit={handleSubmit} onCancel={onClose} />
+      </div>
+    </div>
+  )
+}
+
+const HomePage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabId>("discover")
+  const [rides, setRides] = useState<Ride[]>([])
+  const [profile, setProfile] = useState<Profile>(defaultProfile)
+  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([])
+  const [joinedIds, setJoinedIds] = useState<string[]>([])
+  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    const load = async () => {
+      const [storedRides, storedProfile, storedBookmarks, storedJoined] =
+        await Promise.all([
+          api.get<Ride[]>(RIDES_KEY, []),
+          api.get<Profile>(PROFILE_KEY, defaultProfile),
+          api.get<string[]>(BOOKMARKS_KEY, []),
+          api.get<string[]>(JOINED_KEY, []),
+        ])
+
+      const initialRides = storedRides.length > 0 ? storedRides : seedRides()
+      if (storedRides.length === 0) {
+        await api.set<Ride[]>(RIDES_KEY, initialRides)
+      }
+
+      setRides(initialRides)
+      setProfile(storedProfile)
+      setBookmarkedIds(storedBookmarks)
+      setJoinedIds(storedJoined)
+      setHydrated(true)
+    }
+
+    load()
+  }, [])
+
+  const persistRides = async (next: Ride[]) => {
+    setRides(next)
+    await api.set<Ride[]>(RIDES_KEY, next)
+  }
+
+  const persistBookmarks = async (next: string[]) => {
+    setBookmarkedIds(next)
+    await api.set<string[]>(BOOKMARKS_KEY, next)
+  }
+
+  const persistJoined = async (next: string[]) => {
+    setJoinedIds(next)
+    await api.set<string[]>(JOINED_KEY, next)
+  }
+
+  const handleCreateRide = async (input: NewRideInput) => {
+    const newRide: Ride = {
+      id: uuid(),
+      ...input,
+      createdByMe: true,
+    }
+    const next = [newRide, ...rides]
+    await persistRides(next)
+    if (!joinedIds.includes(newRide.id)) {
+      // creator is implicitly joining their own ride
+      await persistJoined([...joinedIds, newRide.id])
+    }
+    setActiveTab("my-rides")
+  }
+
+  const handleJoinRide = async (id: string) => {
+    const isJoined = joinedIds.includes(id)
+    if (isJoined) return
+    const next = [...joinedIds, id]
+    await persistJoined(next)
+  }
+
+  const handleLeaveRide = async (id: string) => {
+    const next = joinedIds.filter(rid => rid !== id)
+    await persistJoined(next)
+  }
+
+  const handleBookmarkRide = async (id: string) => {
+    const isBookmarked = bookmarkedIds.includes(id)
+    const next = isBookmarked
+      ? bookmarkedIds.filter(rid => rid !== id)
+      : [...bookmarkedIds, id]
+    await persistBookmarks(next)
+  }
+
+  const handleProfileChange = async (nextProfile: Profile) => {
+    setProfile(nextProfile)
+    await api.set<Profile>(PROFILE_KEY, nextProfile)
+  }
+
+  const createdRides = useMemo(
+    () => rides.filter(r => r.createdByMe),
+    [rides]
+  )
+
+  const joinedRides = useMemo(
+    () => rides.filter(r => joinedIds.includes(r.id)),
+    [rides, joinedIds]
+  )
+
+  if (!hydrated) {
+    return (
+      <main className="min-h-screen bg-black">
+        <HeaderBar />
+        <div className="pt-24 px-4 text-[11px] text-slate-500">
+          Calibrating local rides...
+        </div>
+      </main>
+    )
+  }
+
+  return (
+    <main className="relative min-h-screen bg-gradient-to-b from-black via-slate-950 to-black text-slate-50">
+      <HeaderBar />
+      <FilterTabs activeTab={activeTab} onChange={setActiveTab} />
+
+      {activeTab === "discover" && (
+        <DiscoverRidesSection
+          rides={rides}
+          bookmarkedRideIds={bookmarkedIds}
+          joinedRideIds={joinedIds}
+          onJoinRide={handleJoinRide}
+          onBookmarkRide={handleBookmarkRide}
+        />
+      )}
+
+      {activeTab === "my-rides" && (
+        <MyRidesSection
+          createdRides={createdRides}
+          joinedRides={joinedRides}
+          onLeaveRide={handleLeaveRide}
+        />
+      )}
+
+      {activeTab === "profile" && (
+        <ProfileSection
+          profile={profile}
+          onProfileChange={handleProfileChange}
+        />
+      )}
+
+      <div className="fixed bottom-20 left-1/2 z-40 w-full max-w-md -translate-x-1/2 px-4">
+        <Button
+          type="button"
+          onClick={() => setIsCreateOpen(true)}
+          className="h-11 w-full rounded-2xl bg-emerald-500 text-[13px] font-semibold tracking-wide text-black shadow-[0_14px_40px_rgba(16,185,129,0.45)] hover:bg-emerald-400"
+        >
+          + Create a ride
+        </Button>
+      </div>
+
+      <BottomNav activeTab={activeTab} onChange={setActiveTab} />
+
+      <CreateRideSheet
+        open={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onCreateRide={handleCreateRide}
+      />
+    </main>
+  )
+}
+
+export default HomePage
