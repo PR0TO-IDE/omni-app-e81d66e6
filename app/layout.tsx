@@ -5,8 +5,8 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "RideConnect",
-  description: "Mobile app built with Omni",
+  title: "RideConnect Minimal",
+  description: "A minimalist, light-first RideConnect experience",
 }
 
 export default function RootLayout({
@@ -15,13 +15,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
       </head>
       <body className={inter.className}>
-        <div className="min-h-screen bg-black">
-          <div className="mx-auto max-w-md">
+        <div className="min-h-screen bg-background text-foreground">
+          <div className="mx-auto max-w-md px-4">
             {children}
           </div>
         </div>

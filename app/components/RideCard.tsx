@@ -64,68 +64,73 @@ export const RideCard: React.FC<RideCardProps> = ({
   return (
     <Card
       className={cn(
-        "mb-3 border-none bg-gradient-to-br from-slate-900/90 via-slate-950 to-black text-slate-50 shadow-[0_18px_45px_rgba(15,23,42,0.9)]",
-        "rounded-2xl px-4 py-3",
-        "hover:-translate-y-0.5 hover:shadow-[0_24px_55px_rgba(15,23,42,1)] transition-transform duration-200"
+        "mb-4 rounded-3xl border border-border bg-card/80 text-card-foreground shadow-sm",
+        "px-4 py-4 sm:px-5 sm:py-4",
+        "hover:shadow-md hover:bg-card transition-all duration-150"
       )}
     >
-      <CardContent className="p-0 flex flex-col gap-2">
-        <div className="flex items-start justify-between gap-2">
+      <CardContent className="p-0 flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="truncate text-[18px] font-semibold tracking-tight text-slate-50">
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-[16px] sm:text-[17px] font-semibold tracking-tight text-slate-900">
                 {ride.title}
               </h2>
               {ride.level && (
-                <span className="shrink-0 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-emerald-400">
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-medium uppercase tracking-[0.14em] text-slate-600">
                   {ride.level}
                 </span>
               )}
+              {showCreatedBy && (
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[8px] font-medium text-slate-600">
+                  Created by you
+                </span>
+              )}
+              {variant === "my-joined" && (
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[8px] font-medium text-slate-600">
+                  Joined
+                </span>
+              )}
             </div>
-            <p className="mt-0.5 line-clamp-2 text-[11px] font-normal text-slate-400">
+            <p className="mt-0.5 line-clamp-2 text-[12px] text-slate-500">
               {ride.startLocation}
             </p>
           </div>
-          <div className="flex flex-col items-end gap-0.5 text-right">
+          <div className="flex flex-col items-end gap-1 text-right text-[10px] text-slate-500">
             {(ride.distanceKm || ride.pace) && (
-              <div className="flex flex-col items-end text-[10px] text-slate-400 leading-snug">
+              <div className="flex flex-col items-end leading-snug">
                 {ride.distanceKm !== undefined && (
-                  <span className="font-semibold text-slate-200">
+                  <span className="text-[11px] font-semibold text-slate-900">
                     {ride.distanceKm.toFixed(1)} km
                   </span>
                 )}
                 {ride.pace && <span>{ride.pace}</span>}
               </div>
             )}
-            <div className="mt-1 flex flex-col items-end text-[9px] text-slate-500">
-              <span className="uppercase tracking-[0.16em] text-slate-500">
+            <div className="flex flex-col items-end">
+              <span className="text-[9px] uppercase tracking-[0.16em] text-slate-500">
                 {ride.date}
               </span>
-              <span className="text-slate-400">{ride.time}</span>
+              <span className="text-[11px] text-slate-700">{ride.time}</span>
             </div>
           </div>
         </div>
 
         {ride.notes && (
-          <p className="mt-1 line-clamp-2 text-[11px] text-slate-400">
+          <p className="text-[11px] leading-relaxed text-slate-500">
             {ride.notes}
           </p>
         )}
 
-        <div className="mt-2 flex items-center justify-between gap-2">
+        <div className="mt-1 flex items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 text-[9px] text-slate-500">
-            <span className="inline-flex h-5 min-w-[24px] items-center justify-center rounded-full bg-slate-900/90 px-1.5 text-[8px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+            <span className="inline-flex h-5 min-w-[30px] items-center justify-center rounded-full bg-slate-100 px-2 text-[8px] font-semibold uppercase tracking-[0.16em] text-slate-500">
               {variant === "my-created"
-                ? "HOST"
+                ? "Host"
                 : variant === "my-joined"
-                ? "JOINED"
-                : "LOCAL"}
+                ? "Joined"
+                : "Nearby"}
             </span>
-            {showCreatedBy && (
-              <span className="rounded-full bg-emerald-500/5 px-2 py-0.5 text-[8px] font-medium text-emerald-400">
-                Created by you
-              </span>
-            )}
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-1.5">
@@ -134,14 +139,14 @@ export const RideCard: React.FC<RideCardProps> = ({
                 type="button"
                 size="sm"
                 className={cn(
-                  "h-9 min-w-[88px] rounded-full px-3 text-[11px] font-semibold tracking-wide",
+                  "h-9 min-w-[96px] rounded-full px-3 text-[11px] font-medium",
                   isJoined
-                    ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/20"
-                    : "bg-emerald-500 text-black hover:bg-emerald-400"
+                    ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    : "bg-slate-900 text-white hover:bg-slate-800"
                 )}
                 onClick={handleJoin}
               >
-                {isJoined ? "Joined" : "Join ride"}
+                {isJoined ? "Joined" : "Join"}
               </Button>
             )}
 
@@ -150,7 +155,7 @@ export const RideCard: React.FC<RideCardProps> = ({
                 type="button"
                 size="sm"
                 variant="ghost"
-                className="h-9 min-w-[72px] rounded-full px-3 text-[10px] font-medium text-rose-400 hover:bg-rose-500/10"
+                className="h-9 min-w-[72px] rounded-full px-3 text-[10px] font-medium text-rose-500 hover:bg-rose-50"
                 onClick={handleLeave}
               >
                 Leave
@@ -161,13 +166,13 @@ export const RideCard: React.FC<RideCardProps> = ({
               <Button
                 type="button"
                 size="icon"
-                variant={isBookmarked ? "default" : "ghost"}
+                variant="ghost"
                 aria-label={isBookmarked ? "Remove bookmark" : "Bookmark ride"}
                 className={cn(
-                  "h-9 w-9 rounded-full border border-slate-700/80 bg-slate-950/80 text-[15px]",
+                  "h-8 w-8 rounded-full border border-transparent text-[15px]",
                   isBookmarked
-                    ? "border-amber-400/80 bg-amber-500/10 text-amber-400"
-                    : "text-slate-400 hover:text-amber-400"
+                    ? "border-slate-900 bg-slate-900 text-white hover:bg-slate-800"
+                    : "text-slate-400 hover:bg-slate-100 hover:text-slate-900"
                 )}
                 onClick={handleBookmark}
               >

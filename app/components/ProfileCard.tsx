@@ -43,22 +43,22 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onChange }) =
   const handleSave = () => {
     onChange(draft)
     setSaved(true)
-    setTimeout(() => setSaved(false), 1600)
+    setTimeout(() => setSaved(false), 1500)
   }
 
   return (
-    <Card className="border-none bg-gradient-to-b from-slate-900/95 via-slate-950 to-black text-slate-50 shadow-[0_22px_60px_rgba(15,23,42,1)]">
+    <Card className="rounded-3xl border border-border bg-card/90 text-card-foreground shadow-sm">
       <CardContent className="flex flex-col gap-3 px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-[18px] font-semibold tracking-tight text-emerald-400 shadow-[0_10px_30px_rgba(16,185,129,0.35)]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-[18px] font-semibold tracking-tight text-white">
             {initials}
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
-              Your rider passport
+            <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500">
+              Rider profile
             </span>
-            <span className="text-[15px] font-semibold text-slate-50">
-              Dial in how you ride
+            <span className="text-[15px] font-semibold text-slate-900">
+              Help crews match your style
             </span>
           </div>
         </div>
@@ -68,13 +68,13 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onChange }) =
             label="Name"
             value={draft.name}
             onChange={value => handleFieldChange("name", value)}
-            placeholder="How other riders see you"
+            placeholder="Name riders will see"
           />
           <Field
             label="City / Area"
             value={draft.city}
             onChange={value => handleFieldChange("city", value)}
-            placeholder="Where you usually roll out from"
+            placeholder="Where you usually start from"
           />
         </div>
 
@@ -83,13 +83,13 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onChange }) =
             label="Typical pace"
             value={draft.pace}
             onChange={value => handleFieldChange("pace", value)}
-            placeholder="e.g. 26-30 km/h"
+            placeholder="26-30 km/h"
           />
           <Field
             label="Typical distance"
             value={draft.typicalDistance}
             onChange={value => handleFieldChange("typicalDistance", value)}
-            placeholder="e.g. 40-70 km"
+            placeholder="40-70 km"
           />
         </div>
 
@@ -97,7 +97,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onChange }) =
           label="Ride styles"
           value={draft.rideTypes}
           onChange={value => handleFieldChange("rideTypes", value)}
-          placeholder="Gravel, climbs, tempo, coffee laps..."
+          placeholder="Gravel, climbs, coffee rides, city laps"
         />
 
         <div className="flex flex-col gap-1.5">
@@ -107,8 +107,8 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onChange }) =
           <Textarea
             value={draft.bio}
             onChange={e => handleFieldChange("bio", e.target.value)}
-            placeholder="Share how you like to ride, your experience, and what kind of crews you enjoy."
-            className="min-h-[72px] rounded-2xl border-slate-800 bg-slate-950/80 text-[11px] text-slate-100 placeholder:text-slate-600"
+            placeholder="Share your experience and what kind of rides you enjoy."
+            className="min-h-[70px] rounded-2xl border-border bg-white text-[11px] text-slate-800 placeholder:text-slate-400"
           />
         </div>
 
@@ -116,12 +116,12 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, onChange }) =
           <Button
             type="button"
             onClick={handleSave}
-            className="h-11 flex-1 rounded-2xl bg-emerald-500 text-[12px] font-semibold tracking-wide text-black hover:bg-emerald-400"
+            className="h-10 flex-1 rounded-2xl bg-slate-900 text-[11px] font-semibold tracking-wide text-white hover:bg-slate-800"
           >
             Save profile
           </Button>
           {saved && (
-            <div className="inline-flex items-center rounded-xl bg-emerald-500/10 px-2.5 py-1 text-[9px] font-medium text-emerald-300">
+            <div className="inline-flex items-center rounded-xl bg-slate-900/5 px-2.5 py-1 text-[9px] font-medium text-slate-600">
               Saved
             </div>
           )}
@@ -147,7 +147,7 @@ const Field: React.FC<FieldProps> = ({ label, value, onChange, placeholder }) =>
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      className="h-11 rounded-2xl border-slate-800 bg-slate-950/80 text-[11px] text-slate-100 placeholder:text-slate-600"
+      className="h-10 rounded-2xl border-border bg-white text-[11px] text-slate-800 placeholder:text-slate-400"
     />
   </div>
 )

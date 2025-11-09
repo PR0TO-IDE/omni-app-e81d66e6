@@ -5,8 +5,6 @@ import { v4 as uuid } from "uuid"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { api } from "@/lib/api"
 
@@ -43,10 +41,10 @@ const seedRides = (): Ride[] => {
   return [
     {
       id: uuid(),
-      title: "Sunrise Riverfront Tempo",
+      title: "Sunrise riverfront tempo",
       date: fmt(d1),
       time: "06:10",
-      startLocation: "Riverfront Park – East Gate",
+      startLocation: "Riverfront Park – East gate",
       distanceKm: 42,
       pace: "27-30 km/h",
       level: "Intermediate",
@@ -55,7 +53,7 @@ const seedRides = (): Ride[] => {
     },
     {
       id: uuid(),
-      title: "City Lights Social Loop",
+      title: "City lights social loop",
       date: fmt(d2),
       time: "19:00",
       startLocation: "Central Plaza Fountain",
@@ -67,10 +65,10 @@ const seedRides = (): Ride[] => {
     },
     {
       id: uuid(),
-      title: "Gravel Ridge Sunrise Climb",
+      title: "Gravel ridge sunrise climb",
       date: fmt(d3),
       time: "07:00",
-      startLocation: "Oakridge Trailhead Lot",
+      startLocation: "Oakridge Trailhead lot",
       distanceKm: 55,
       pace: "25-28 km/h",
       level: "Advanced",
@@ -82,22 +80,22 @@ const seedRides = (): Ride[] => {
 
 const HeaderBar: React.FC = () => {
   return (
-    <header className="fixed inset-x-0 top-0 z-40 mx-auto flex h-14 max-w-md items-center justify-between px-4 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-40 mx-auto flex h-14 max-w-md items-center justify-between border-b border-border bg-background/95 px-4 pb-1 pt-2 backdrop-blur-md">
       <div className="flex flex-col leading-tight">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-400">
+        <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500">
           RideConnect
         </span>
-        <h1 className="text-[19px] font-semibold tracking-tight text-slate-50">
-          Find your next crew
+        <h1 className="text-[17px] font-semibold tracking-tight text-slate-900">
+          Simple rides, nearby
         </h1>
       </div>
       <Button
         type="button"
         size="icon"
-        className="h-9 w-9 rounded-2xl bg-slate-900/90 text-[15px] text-slate-300 hover:bg-slate-800"
-        aria-label="Open quick actions"
+        className="h-8 w-8 rounded-full bg-slate-900 text-[16px] text-white hover:bg-slate-800"
+        aria-label="Quick actions"
       >
-        ☰
+        ···
       </Button>
     </header>
   )
@@ -116,8 +114,8 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeTab, onChange }) => {
   ]
 
   return (
-    <div className="mt-16 px-4">
-      <div className="flex rounded-full bg-slate-900/80 p-1.5 shadow-[0_16px_45px_rgba(15,23,42,1)] ring-1 ring-slate-800/80">
+    <div className="mt-16 mb-2 flex w-full justify-center">
+      <div className="inline-flex w-full max-w-md items-center rounded-2xl border border-border bg-white px-1.5 py-1 shadow-sm">
         {items.map(item => {
           const isActive = item.id === activeTab
           return (
@@ -126,11 +124,8 @@ const FilterTabs: React.FC<FilterTabsProps> = ({ activeTab, onChange }) => {
               type="button"
               onClick={() => onChange(item.id)}
               className={cn(
-                "flex-1 rounded-full px-2.5 py-2 text-center text-[10px] font-semibold uppercase tracking-[0.16em] transition-all",
-                "h-10 min-h-[40px]",
-                isActive
-                  ? "bg-emerald-500 text-black shadow-[0_10px_30px_rgba(16,185,129,0.35)]"
-                  : "text-slate-500 hover:text-slate-100"
+                "flex-1 rounded-2xl px-2.5 py-1.5 text-center text-[10px] font-medium uppercase tracking-[0.16em] text-slate-500 transition-colors",
+                isActive ? "bg-slate-900 text-white" : "hover:bg-slate-100 hover:text-slate-900"
               )}
             >
               {item.label}
@@ -156,38 +151,36 @@ const DiscoverRidesSection: React.FC<DiscoverRidesSectionProps> = ({
   joinedRideIds,
   onJoinRide,
   onBookmarkRide,
-}) => {
-  return (
-    <section className="mt-3 px-4 pb-28">
-      <div className="mb-2 flex items-baseline justify-between">
-        <h2 className="text-[13px] font-semibold tracking-[0.12em] text-slate-400">
-          Nearby meetups
-        </h2>
-        <span className="text-[10px] text-slate-500">
-          {rides.length} curated rides
-        </span>
-      </div>
-      <div>
-        {rides.map(ride => (
-          <RideCard
-            key={ride.id}
-            ride={ride}
-            variant="discover"
-            isBookmarked={bookmarkedRideIds.includes(ride.id)}
-            isJoined={joinedRideIds.includes(ride.id)}
-            onJoin={onJoinRide}
-            onBookmark={onBookmarkRide}
-          />
-        ))}
-        {rides.length === 0 && (
-          <Card className="mt-2 rounded-2xl border-none bg-slate-950/95 px-4 py-4 text-[11px] text-slate-400 shadow-[0_16px_40px_rgba(15,23,42,0.9)]">
-            No rides yet. Tap "Create" below to host the first crew in your area.
-          </Card>
-        )}
-      </div>
-    </section>
-  )
-}
+}) => (
+  <section className="mt-1 pb-24">
+    <div className="mb-2 flex items-baseline justify-between px-1">
+      <h2 className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500">
+        Nearby meetups
+      </h2>
+      <span className="text-[10px] text-slate-400">
+        {rides.length} curated rides
+      </span>
+    </div>
+    <div>
+      {rides.map(ride => (
+        <RideCard
+          key={ride.id}
+          ride={ride}
+          variant="discover"
+          isBookmarked={bookmarkedRideIds.includes(ride.id)}
+          isJoined={joinedRideIds.includes(ride.id)}
+          onJoin={onJoinRide}
+          onBookmark={onBookmarkRide}
+        />
+      ))}
+      {rides.length === 0 && (
+        <Card className="mt-2 rounded-3xl border border-dashed border-slate-200 bg-white px-4 py-4 text-[11px] text-slate-500">
+          No rides yet. Use the button below to host the first meetup in your area.
+        </Card>
+      )}
+    </div>
+  </section>
+)
 
 interface MyRidesSectionProps {
   createdRides: Ride[]
@@ -199,53 +192,51 @@ const MyRidesSection: React.FC<MyRidesSectionProps> = ({
   createdRides,
   joinedRides,
   onLeaveRide,
-}) => {
-  return (
-    <section className="mt-3 px-4 pb-28 flex flex-col gap-3">
-      <div>
-        <h2 className="mb-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-          Created by you
-        </h2>
-        {createdRides.length > 0 ? (
-          createdRides.map(ride => (
-            <RideCard
-              key={ride.id}
-              ride={ride}
-              variant="my-created"
-            />
-          ))
-        ) : (
-          <p className="rounded-2xl bg-slate-950/95 px-3 py-3 text-[10px] text-slate-500">
-            You haven&apos;t hosted a ride yet. Use the create button below to design a route
-            that matches your style.
-          </p>
-        )}
-      </div>
+}) => (
+  <section className="mt-1 pb-24 flex flex-col gap-4">
+    <div>
+      <h2 className="mb-1 px-1 text-[10px] font-medium uppercase tracking-[0.16em] text-slate-500">
+        Created by you
+      </h2>
+      {createdRides.length > 0 ? (
+        createdRides.map(ride => (
+          <RideCard
+            key={ride.id}
+            ride={ride}
+            variant="my-created"
+          />
+        ))
+      ) : (
+        <Card className="rounded-3xl border border-dashed border-slate-200 bg-white px-4 py-4 text-[10px] text-slate-500">
+          You have not hosted a ride yet. Use the create button below to start a simple
+          meetup that matches your style.
+        </Card>
+      )}
+    </div>
 
-      <div>
-        <h2 className="mb-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-          You&apos;re joining
-        </h2>
-        {joinedRides.length > 0 ? (
-          joinedRides.map(ride => (
-            <RideCard
-              key={ride.id}
-              ride={ride}
-              variant="my-joined"
-              isJoined
-              onLeave={onLeaveRide}
-            />
-          ))
-        ) : (
-          <p className="rounded-2xl bg-slate-950/95 px-3 py-3 text-[10px] text-slate-500">
-            Join a ride from Discover and it will appear here with a quick way to
-            leave if plans change.
-          </p>
-        )}
-      </div>
-    </section>
-  )
-}
+    <div>
+      <h2 className="mb-1 px-1 text-[10px] font-medium uppercase tracking-[0.16em] text-slate-500">
+        You are joining
+      </h2>
+      {joinedRides.length > 0 ? (
+        joinedRides.map(ride => (
+          <RideCard
+            key={ride.id}
+            ride={ride}
+            variant="my-joined"
+            isJoined
+            onLeave={onLeaveRide}
+          />
+        ))
+      ) : (
+        <Card className="rounded-3xl border border-dashed border-slate-200 bg-white px-4 py-4 text-[10px] text-slate-500">
+          Join a ride from Discover and it will appear here with a quick way to leave
+          if plans change.
+        </Card>
+      )}
+    </div>
+  </section>
+)
 
 interface ProfileSectionProps {
   profile: Profile
@@ -255,13 +246,11 @@ interface ProfileSectionProps {
 const ProfileSection: React.FC<ProfileSectionProps> = ({
   profile,
   onProfileChange,
-}) => {
-  return (
-    <section className="mt-3 px-4 pb-28">
-      <ProfileCard profile={profile} onChange={onProfileChange} />
-    </section>
-  )
-}
+}) => (
+  <section className="mt-1 pb-24">
+    <ProfileCard profile={profile} onChange={onProfileChange} />
+  </section>
+)
 
 interface CreateRideSheetProps {
   open: boolean
@@ -282,24 +271,24 @@ const CreateRideSheet: React.FC<CreateRideSheetProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-t-3xl bg-slate-950/98 px-4 pb-4 pt-3 shadow-[0_-18px_55px_rgba(15,23,42,1)] ring-1 ring-slate-800/90">
-        <div className="mb-2 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-t-3xl border border-border bg-background px-4 pb-4 pt-3 shadow-xl">
+        <div className="mb-3 flex items-center justify-between">
           <div className="flex flex-col leading-tight">
-            <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-emerald-400">
+            <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-slate-500">
               Host a meetup
             </span>
-            <span className="text-[15px] font-semibold text-slate-50">
-              Design a ride that fits your crew
+            <span className="text-[15px] font-semibold text-slate-900">
+              Create a simple ride card
             </span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900/90 text-[14px] text-slate-400 hover:bg-slate-800"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-[14px] text-white hover:bg-slate-800"
             aria-label="Close create ride"
           >
-            ✕
+            ×
           </button>
         </div>
         <CreateRideForm onSubmit={handleSubmit} onCancel={onClose} />
@@ -366,7 +355,6 @@ const HomePage: React.FC = () => {
     const next = [newRide, ...rides]
     await persistRides(next)
     if (!joinedIds.includes(newRide.id)) {
-      // creator is implicitly joining their own ride
       await persistJoined([...joinedIds, newRide.id])
     }
     setActiveTab("my-rides")
@@ -409,50 +397,52 @@ const HomePage: React.FC = () => {
 
   if (!hydrated) {
     return (
-      <main className="min-h-screen bg-black">
+      <main className="min-h-screen bg-background">
         <HeaderBar />
-        <div className="pt-24 px-4 text-[11px] text-slate-500">
-          Calibrating local rides...
+        <div className="pt-24 text-[11px] text-slate-500">
+          Loading your rides...
         </div>
       </main>
     )
   }
 
   return (
-    <main className="relative min-h-screen bg-gradient-to-b from-black via-slate-950 to-black text-slate-50">
+    <main className="relative min-h-screen bg-background pb-20">
       <HeaderBar />
-      <FilterTabs activeTab={activeTab} onChange={setActiveTab} />
+      <div className="pt-2">
+        <FilterTabs activeTab={activeTab} onChange={setActiveTab} />
 
-      {activeTab === "discover" && (
-        <DiscoverRidesSection
-          rides={rides}
-          bookmarkedRideIds={bookmarkedIds}
-          joinedRideIds={joinedIds}
-          onJoinRide={handleJoinRide}
-          onBookmarkRide={handleBookmarkRide}
-        />
-      )}
+        {activeTab === "discover" && (
+          <DiscoverRidesSection
+            rides={rides}
+            bookmarkedRideIds={bookmarkedIds}
+            joinedRideIds={joinedIds}
+            onJoinRide={handleJoinRide}
+            onBookmarkRide={handleBookmarkRide}
+          />
+        )}
 
-      {activeTab === "my-rides" && (
-        <MyRidesSection
-          createdRides={createdRides}
-          joinedRides={joinedRides}
-          onLeaveRide={handleLeaveRide}
-        />
-      )}
+        {activeTab === "my-rides" && (
+          <MyRidesSection
+            createdRides={createdRides}
+            joinedRides={joinedRides}
+            onLeaveRide={handleLeaveRide}
+          />
+        )}
 
-      {activeTab === "profile" && (
-        <ProfileSection
-          profile={profile}
-          onProfileChange={handleProfileChange}
-        />
-      )}
+        {activeTab === "profile" && (
+          <ProfileSection
+            profile={profile}
+            onProfileChange={handleProfileChange}
+          />
+        )}
+      </div>
 
       <div className="fixed bottom-20 left-1/2 z-40 w-full max-w-md -translate-x-1/2 px-4">
         <Button
           type="button"
           onClick={() => setIsCreateOpen(true)}
-          className="h-11 w-full rounded-2xl bg-emerald-500 text-[13px] font-semibold tracking-wide text-black shadow-[0_14px_40px_rgba(16,185,129,0.45)] hover:bg-emerald-400"
+          className="h-11 w-full rounded-2xl bg-slate-900 text-[13px] font-semibold tracking-wide text-white shadow-sm hover:bg-slate-800"
         >
           + Create a ride
         </Button>
